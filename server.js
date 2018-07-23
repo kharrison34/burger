@@ -7,7 +7,8 @@ var mysql = require('mysql')
 //set up the express app
 
 var app = express();
-var port = process.env.port || 8080;
+var PORT = process.env.port || 8080;
+// var PORT = 3307;
 
 //require models used for syncing 
 var db = require("./models");
