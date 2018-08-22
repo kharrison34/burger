@@ -1,37 +1,27 @@
-var express = require('express')();
+
+//Dependencies
+var express = require('express');
 var bodyParser = require('body-parser');
+var handlebars = require('express-handlebars');
 
-var mysql = require('mysql')
-
-
-//set up the express app
+var PORT = process.env.PORT || 3000;
 
 var app = express();
-var PORT = process.env.port || 8080;
-// var PORT = 3307;
 
-//require models used for syncing 
-var db = require("./models");
+app.use(express.static("public"));
+//app.use(bodyParser.urlencoded({extended:true}));
 
-//sets up the express app to handle data parsing
-
-// parse application 
-app.use(bodyParser.urlencoded({ extended: true}));
-//parse application and json
 app.use(bodyParser.json());
 
+//handlebars
+app.engine('handlebars', handlebars({defaultLayout: 'main'}));
+app.set('view engine','handlebars');
 
-//static directory
-app.use(express.static("public"));
+//Import routes and give server access to them
+var routes = require('./controllers/burgers_controller');
+app.use(routes);
 
-//routes
-
-require("./routes/html-routes.js")(app);
-
-//syncing the sequilize models and then starting the exress app
-
-db.sequelize.sync({ force: true }).then(function() {
-    app.listen(PORT, function() {
-      console.log("App listening on PORT " + PORT);
-    });
+app.listen(PORT, ()=>{
+    //Log (server-side) that server has started
+    console.log(`Connected on port: ${PORT}`);
 });

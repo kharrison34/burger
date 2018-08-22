@@ -1,52 +1,55 @@
-var express = require("express");
-
+var express = require('express');
 var router = express.Router();
 
+var burger = require('../models/burger');
 
-var burger = require("../models/burgers.js");
-
-//routes and logic
-
-router.get("/", function(req, res) {
-    burger.all(function(data) {
-        var burObject = {
-            burgers: data
-        };
-
-        res.render("index", burObject);
-    });
-});
-
-router.put("/api/burgers/:id", function(result) {
-    var condition = "id = " + req.params.id;
-
-    console.log("condition", condition);
-
-    
-    burger.update(req.body, condition, function(result) {
-        if (result.changedRows == 0) {
-            // If no rows were changed, then the ID must not exist, so 404
-            return res.status(404).end();
-        } else {
-          res.status(200).end();
+//Helper functions
+getBurgers =(list)=>{
+    //function returns array of array where array[0] is of uneaten burgers and array[1] is of eaten burgers
+    var devoured = [];
+    var burgerList = [];
+    for (var i=0; i<list.length; i++){
+        if(list[i].devoured){
+            devoured.push(list[i]);
         }
-    });
-
-    
-});
-
-router.delete("/api/burgers/:id", function(req, res) {
-    var condition = "id = " + req.params.id;
-
-    burger.delete(condition, function(result) {
-        if (result.affectedRows == 0) {
-            // If no rows were changed, then the ID must not exist, so 404
-            return res.status(404).end();
-        } else {
-            res.status(200).end();
+        else{
+            burgerList.push(list[i]);
         }
+    }
+    return [burgerList, devoured];
+}
+
+//Router controls
+router.get('/',(req, res)=>{
+    burger.selectAll((data)=>{
+        
+        var burgerList = getBurgers(data);
+
+        var hbsObject ={
+            burgerArray: burgerList[0],
+            devouredArray: burgerList[1]
+        }
+        res.render("index", hbsObject);
     });
 });
 
-// Export routes for server.js to use.
+router.post("/api/burgers",(req, res)=>{
+    var newBurger = req.body;
+    //console.log(newBurger);
+    burger.insertOne(newBurger, (data)=>{
+        res.json(true);
+    });
+});
+
+router.put("/api/burgers/:id", (req, res)=>{
+    var updateBurger ={
+        devoured: true,
+        id:req.params.id
+    }
+    //console.log(req.params.id);
+    burger.updateOne(updateBurger, (data)=>{
+        res.json(true);
+    });
+});
+
 module.exports = router;

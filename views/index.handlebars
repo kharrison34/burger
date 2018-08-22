@@ -1,33 +1,85 @@
-<div class="container">
-    <section id="page-name">
-            <iframe id="main-image" src="https://giphy.com/embed/UAXou95E6oPjW" width="480" height="326" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
-            <h1>Eat-Da-Buger</h1>
-    </section>
-
-    <section class="row">
-        <div class="col-md-7 col-left">
-            <table>
-                {{#each burgers}}
-                    {{#unless devoured}}
-                        {{> burgers/burger-block}}
-                    {{/unless}}
-                {{/each}}
-            </table>
+<div class="container mb-3">
+    <div class="row justify-content-center">
+        <div class="burgerImg">
+            <img src="assets/img/burger.png" class="img-fluid" alt="burger">
         </div>
-        <div class="col-md-5 col-right">
-            {{#each burgers}}
-                {{#if devoured}}
-                    <div>{{id}}. {{burger_name}}</div>
-                {{/if}}
-            {{/each}}        
-        </div>          
-    </section>
-
-    <form class="create-form">
-        <div class="form-group">
-            <label for="name"></label>
-            <textarea id="name" name="burger-name" rows="2" cols="40" placeholder="What do you want to eat?"></textarea>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col col-sm-4">
+            <h1>Eat-Da-Burger!</h1>
+            <input type="text" id="addBurger" class="form-control">
+            <button type="submit" class="btn btn-primary mt-2" id="getBurger">Submit</button>
         </div>
-        <button type="submit">Add Burger</button>
-    </form>     
+    </div>
 </div>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {{#each burgerArray}}
+                <div class="container m-1 p-1">
+                    <div class="textBlock">
+                        <span>{{this.id}}. {{this.burger_name}}</span>
+                    </div>
+                    <button class="devour" data-num="{{this.id}}">Devour it!</button>
+                </div>
+            {{/each}}
+        </div>
+        <div class="col">
+            {{#each devouredArray}}
+                <div class="container m-0 p-0">
+                    <div class="textBlock2">
+                        <span>{{this.id}}. {{this.burger_name}}</span>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(function(){
+        //console.log("successful");
+
+        //button click for submitting new burger
+        $("#getBurger").on('click',(event)=>{
+            event.preventDefault();
+            var newBurger = {
+                burger_name: $('#addBurger').val()
+            };
+            //console.log(newBurger);
+            $.ajax({
+                method:"POST",
+                url: "/api/burgers",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                data: JSON.stringify(newBurger)
+            }).then(data=>{
+                if(data){
+                    console.log("added new burger");
+                    //reloads the page
+                    location.reload();
+                }
+            });
+        })
+
+        //button click for eatting the burgers
+        $('body').on('click','.devour',function(){
+            var id = $(this).data('num');
+            console.log("eat burger # " + id);
+            $.ajax({
+                method: "PUT",
+                url: `/api/burgers/${id}`
+            }).then(data=>{
+                if(data){
+                    console.log("eatten burger #" + id);
+                    //reloads the page
+                    location.reload();
+                }
+            })
+        })
+    });
+</script>

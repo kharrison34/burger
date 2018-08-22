@@ -1,0 +1,30 @@
+body{
+    background-color: lightgray;
+    text-align: center;
+}
+
+h1{
+    color: blue;
+}
+
+.burgerImg{
+    margin-top: 5vh;
+    position: relative;
+    width: 200px;
+}
+
+.textBlock{
+    background-color: white;
+    border: solid 2px lightgray;
+    min-width: 75%;
+    float: left;
+    padding: 5px 0;
+}
+
+.textBlock2{
+    background-color: lightgray;
+    border: solid 2px grey;
+    min-width: 50%;
+    padding: 5px 0;
+    margin: 0;
+}
