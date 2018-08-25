@@ -10,7 +10,7 @@ else{
     host: process.env.DBHOST || "localhost", 
     user: process.env.DBUSER || "root",
     password: process.env.DBPASSWORD || "root",
-    port: 3307, 
+    port: process.env.port || 3000;
     database: process.env.DB || "burgers_db",
     multipleStatements: true
   });
